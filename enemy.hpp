@@ -44,7 +44,7 @@ class Enemy{
         return direction;
     }
     
-
+    
 };
 
 

@@ -14,9 +14,19 @@ int life = 5;
 //!inicialize colors 
 #define mapWidth 49
 #define mapHeight 25
-#define MAXPOINT 10
+#define MAXPOINT 1
 
-
+void initialize_colors() {
+    start_color();
+    init_pair(1, COLOR_YELLOW, COLOR_YELLOW);
+    init_pair(3, COLOR_GREEN, COLOR_GREEN);
+    init_pair(4, COLOR_CYAN, COLOR_CYAN);
+    init_pair(5, COLOR_MAGENTA, COLOR_MAGENTA);
+    init_pair(6, COLOR_RED, COLOR_RED);
+    init_pair(7, COLOR_RED, COLOR_BLACK);
+    init_pair(8, COLOR_GREEN, COLOR_BLACK);
+    init_pair(9, COLOR_MAGENTA, COLOR_BLACK);
+}
 class Player{
     public:    
     string name;
@@ -32,17 +42,59 @@ class Player{
         xcordinate =mapWidth/2;
     }
 };
-void initialize_colors() {
-    start_color();
-    init_pair(1, COLOR_YELLOW, COLOR_YELLOW);
-    init_pair(3, COLOR_GREEN, COLOR_GREEN);
-    init_pair(4, COLOR_CYAN, COLOR_CYAN);
-    init_pair(5, COLOR_MAGENTA, COLOR_MAGENTA);
-    init_pair(6, COLOR_RED, COLOR_RED);
-    init_pair(7, COLOR_RED, COLOR_BLACK);
-    init_pair(8, COLOR_GREEN, COLOR_BLACK);
-    init_pair(9, COLOR_MAGENTA, COLOR_BLACK);
-}
+class GameOverScreen {
+private:
+    WINDOW* window;
+    int max_x, max_y;
+
+public:
+    GameOverScreen(WINDOW* parent_window, int width, int height) {
+        initialize_colors();
+        max_x = width / 2 + 10;
+        max_y = height / 2;
+        window = newwin(max_y, max_x, 0, 0);
+        mvwin(window, (height - max_y) / 2, (width - max_x) / 2);
+    }
+
+    ~GameOverScreen() {
+        delwin(window);
+    }
+
+    void show() {
+        wattron(window, COLOR_PAIR(7));
+        mvwprintw(window, max_y / 2, max_x / 2 - 5, "game over");
+        wattroff(window, COLOR_PAIR(7));
+        box(window, 0, 0);
+        wrefresh(window);
+    }
+};
+class WinGame {
+private:
+    WINDOW* window;
+    int max_x, max_y;
+
+public:
+    WinGame(WINDOW* parent_window, int width, int height) {
+        initialize_colors();
+        max_x = width / 2 + 10;
+        max_y = height / 2;
+        window = newwin(max_y, max_x, 0, 0);
+        mvwin(window, (height - max_y) / 2, (width - max_x) / 2);
+    }
+
+    ~WinGame() {
+        delwin(window);
+    }
+
+    void show() {
+        wattron(window, COLOR_PAIR(8));
+        mvwprintw(window, max_y / 2, max_x / 2 - 5, "YOU WIN");
+        wattroff(window, COLOR_PAIR(8));
+        box(window, 0, 0);
+        wrefresh(window);
+    }
+};
+
 void spawnpoints(WINDOW* window){
         
         int xlocations[9]={2,6,10,14,18,30,34,42,46};
@@ -58,18 +110,29 @@ void spawnpoints(WINDOW* window){
         wrefresh(window); 
         spawn=false;     
 }
-void checkEnemyCollision(WINDOW *window, vector<Enemy>& enemies, int i,int x,int y) {
-    if (mvwinch(window,y,(x * -1)) == '*') {
+void checkEnemyCollisionx(WINDOW *window, vector<Enemy>& enemies, int i,int x,int y,int originalx) {
+    
+    if (mvwinch(window,y,originalx-x) == '*') {
         wattrset(window, A_NORMAL);
-        mvwaddch(window,y,x,' ');
-        mvwaddch(window,y,x,'*');
+        mvwaddch(window,y,originalx+x,' ');
+        mvwaddch(window,y,originalx+x,'*');
     }
     else {
         wattrset(window, A_NORMAL);
-        mvwaddch(window,y,x,' ');
+        mvwaddch(window,y,originalx+x,' ');
     }
 }
-
+void checkEnemyCollisiony(WINDOW *window, vector<Enemy>& enemies, int i,int x,int y,int originaly) {
+    if (mvwinch(window,originaly-y,x) == '*') {
+        wattrset(window, A_NORMAL);
+        mvwaddch(window,originaly+y,x,' ');
+        mvwaddch(window,originaly+y,x,'*');
+    }
+    else {
+        wattrset(window, A_NORMAL);
+        mvwaddch(window,originaly+y,x,' ');
+    }
+}
 void enemyfunction(WINDOW* window ,vector<Enemy>& enemies,int i,int color){
     int x = enemies[i].getcorx();
     int y = enemies[i].getcory();
@@ -91,33 +154,32 @@ void enemyfunction(WINDOW* window ,vector<Enemy>& enemies,int i,int color){
         case 1:
         enemies[i].setx(enemies[i].getcorx()-2);//?for changing position
         mvwaddch(window,enemies[i].getcory(),enemies[i].getcorx(),enemies[i].getform());//?getting position
-        checkEnemyCollision(window, enemies, i,enemies[i].getcorx()+2 ,enemies[i].getcory());
+        checkEnemyCollisionx(window, enemies, i,2 ,enemies[i].getcory(),enemies[i].getcorx());
         break;
         
         case 2:
         enemies[i].sety(enemies[i].getcory()-1);//?for changing position
         mvwaddch(window,enemies[i].getcory(),enemies[i].getcorx(),enemies[i].getform());//?getting position
-        checkEnemyCollision(window, enemies, i,enemies[i].getcorx() ,enemies[i].getcory()+1);
+        checkEnemyCollisiony(window, enemies, i,enemies[i].getcorx() ,1,enemies[i].getcory());
         break;
 
 
         case 3:
         enemies[i].setx(enemies[i].getcorx()+2);//?for changing position
         mvwaddch(window,enemies[i].getcory(),enemies[i].getcorx(),enemies[i].getform());//?getting position
-        checkEnemyCollision(window, enemies, i,enemies[i].getcorx() -2,enemies[i].getcory());
+        checkEnemyCollisionx(window, enemies, i,-2,enemies[i].getcory(),enemies[i].getcorx());
         break;
 
         case 4:
         enemies[i].sety(enemies[i].getcory()+1);//?for changing position
         mvwaddch(window,enemies[i].getcory(),enemies[i].getcorx(),enemies[i].getform());//?getting position
-        checkEnemyCollision(window, enemies, i,enemies[i].getcorx() ,enemies[i].getcory()-1);
+        checkEnemyCollisiony(window, enemies, i,enemies[i].getcorx() ,-1,enemies[i].getcory());
         break;
     }
     wattroff(window,COLOR_PAIR(color));
     
     
 }
-
 void printenemy(WINDOW* window ,vector<Enemy>& enemies){
     //!1 enemy 
     enemyfunction(window,enemies,0,3);
@@ -159,46 +221,6 @@ bool checkContact(Player player, vector<Enemy>& enemies, int i) {
     
     return false;
 }
-void LOOSEGAME(WINDOW* window){
-    initialize_colors();
-    delwin(window);
-    WINDOW *win = newwin(mapHeight/2, mapWidth/2+10, 0, 0);
-    
-    int max_x = getmaxx(win);
-    int max_y = getmaxy(win);
-
-    int x = (getmaxx(window) - max_x) / 2;
-    int y = (getmaxy(window) - max_y) / 2;
-    mvwin(win, y, x);
-    
-    wattron(win , COLOR_PAIR(7));
-    mvwprintw(win,max_y/2,max_x/2-5,"game over");    
-    wattroff(win , COLOR_PAIR(7));
-    
-    box(win, 0, 0);
-    wrefresh(win);
-    window = win;
-}
-void WINGAME(WINDOW* window){
-    initialize_colors();
-    delwin(window);
-    WINDOW *win = newwin(mapHeight/2, mapWidth/2+10, 0, 0);
-    
-    int max_x = getmaxx(win);
-    int max_y = getmaxy(win);
-
-    int x = (getmaxx(window) - max_x) / 2;
-    int y = (getmaxy(window) - max_y) / 2;
-    mvwin(win, y, x);
-    
-    wattron(win , COLOR_PAIR(8));
-    mvwprintw(win,max_y/2,max_x/2-5,"YOU WIN!!");    
-    wattroff(win , COLOR_PAIR(8));
-    
-    box(win, 0, 0);
-    wrefresh(win);
-    window = win;
-}
 void INFO(WINDOW* window){
     initialize_colors();
     WINDOW *win = newwin(mapHeight/2, mapWidth/2+10, 0, 0);
@@ -219,7 +241,7 @@ void INFO(WINDOW* window){
     wattroff(win , COLOR_PAIR(9)); 
     
     wattron(win , COLOR_PAIR(7));
-    mvwprintw(win,max_y/2,max_x/2-11,"press 'F1' to use EXIT" );    
+    mvwprintw(win,max_y/2,max_x/2-11,"press 'q' to use EXIT" );    
     wattroff(win , COLOR_PAIR(7));
     
     
@@ -312,7 +334,7 @@ int main (){
             spawnpoints(window);
             spawn=false;
         }
-        
+        WinGame winGame(window, mapWidth, mapHeight);
         MapPrinter::printMap(window);
         printenemy(window,enemies);
 
@@ -338,7 +360,7 @@ int main (){
                         {
                             napms(400);
                             //!game win
-                            WINGAME(window);
+                            winGame.show();
                             napms(600);
                             system("clear");
                             delwin(window);
@@ -367,7 +389,7 @@ int main (){
                         {
                             napms(400);
                             //!game win
-                            WINGAME(window);
+                            winGame.show();
                             napms(600);
                             system("clear");
                             delwin(window);
@@ -395,7 +417,7 @@ int main (){
                         {
                             napms(400);
                             //!game win
-                            WINGAME(window);
+                            winGame.show();
                             napms(600);
                             system("clear");
                             delwin(window);
@@ -423,7 +445,7 @@ int main (){
                         {
                             napms(400);
                             //!game win
-                            WINGAME(window);
+                            winGame.show();
                             napms(600);
                             system("clear");
                             delwin(window);
@@ -455,7 +477,8 @@ int main (){
                     //?delay game tuning off 
                     napms(400);
                     //!game lost 
-                    LOOSEGAME(window);
+                    GameOverScreen gameOverScreen(window, mapWidth, mapHeight);
+                    gameOverScreen.show();
                     napms(600);
                     system("clear");
                     delwin(window);
