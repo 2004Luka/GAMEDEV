@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "vector": "cpp",
+        "iostream": "cpp",
+        "system_error": "cpp",
+        "xlocale": "cpp",
+        "xstring": "cpp",
+        "sstream": "cpp",
+        "xlocinfo": "cpp",
+        "thread": "cpp",
+        "ctime": "cpp",
+        "chrono": "cpp",
+        "xstddef": "cpp"
+    }
+}
