@@ -14,7 +14,7 @@ int life = 5;
 //!inicialize colors 
 #define mapWidth 49
 #define mapHeight 25
-#define MAXPOINT 1
+#define MAXPOINT 10
 
 void initialize_colors() {
     start_color();
