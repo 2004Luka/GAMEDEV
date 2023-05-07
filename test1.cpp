@@ -110,7 +110,7 @@ void spawnpoints(WINDOW* window){
         wrefresh(window); 
         spawn=false;     
 }
-void checkEnemyCollisionx(WINDOW *window, vector<Enemy>& enemies, int i,int x,int y,int originalx) {
+void checkEnemyx(WINDOW *window, vector<Enemy>& enemies, int i,int x,int y,int originalx) {
     
     if (mvwinch(window,y,originalx-x) == '*') {
         wattrset(window, A_NORMAL);
@@ -122,7 +122,7 @@ void checkEnemyCollisionx(WINDOW *window, vector<Enemy>& enemies, int i,int x,in
         mvwaddch(window,y,originalx+x,' ');
     }
 }
-void checkEnemyCollisiony(WINDOW *window, vector<Enemy>& enemies, int i,int x,int y,int originaly) {
+void checkEnemyy(WINDOW *window, vector<Enemy>& enemies, int i,int x,int y,int originaly) {
     if (mvwinch(window,originaly-y,x) == '*') {
         wattrset(window, A_NORMAL);
         mvwaddch(window,originaly+y,x,' ');
@@ -154,26 +154,26 @@ void enemyfunction(WINDOW* window ,vector<Enemy>& enemies,int i,int color){
         case 1:
         enemies[i].setx(enemies[i].getcorx()-2);//?for changing position
         mvwaddch(window,enemies[i].getcory(),enemies[i].getcorx(),enemies[i].getform());//?getting position
-        checkEnemyCollisionx(window, enemies, i,2 ,enemies[i].getcory(),enemies[i].getcorx());
+        checkEnemyx(window, enemies, i,2 ,enemies[i].getcory(),enemies[i].getcorx());
         break;
         
         case 2:
         enemies[i].sety(enemies[i].getcory()-1);//?for changing position
         mvwaddch(window,enemies[i].getcory(),enemies[i].getcorx(),enemies[i].getform());//?getting position
-        checkEnemyCollisiony(window, enemies, i,enemies[i].getcorx() ,1,enemies[i].getcory());
+        checkEnemyy(window, enemies, i,enemies[i].getcorx() ,1,enemies[i].getcory());
         break;
 
 
         case 3:
         enemies[i].setx(enemies[i].getcorx()+2);//?for changing position
         mvwaddch(window,enemies[i].getcory(),enemies[i].getcorx(),enemies[i].getform());//?getting position
-        checkEnemyCollisionx(window, enemies, i,-2,enemies[i].getcory(),enemies[i].getcorx());
+        checkEnemyx(window, enemies, i,-2,enemies[i].getcory(),enemies[i].getcorx());
         break;
 
         case 4:
         enemies[i].sety(enemies[i].getcory()+1);//?for changing position
         mvwaddch(window,enemies[i].getcory(),enemies[i].getcorx(),enemies[i].getform());//?getting position
-        checkEnemyCollisiony(window, enemies, i,enemies[i].getcorx() ,-1,enemies[i].getcory());
+        checkEnemyy(window, enemies, i,enemies[i].getcorx() ,-1,enemies[i].getcory());
         break;
     }
     wattroff(window,COLOR_PAIR(color));
