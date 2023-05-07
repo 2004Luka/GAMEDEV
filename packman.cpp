@@ -287,18 +287,15 @@ int main (){
     //!get name of player and select character
     system("clear");
     string PlayerName;
-    char PlayerCharacter;
     cout<<"Enter player name: ";
     cin >> PlayerName;
-    cout<<"Enter player character: ";
-    cin >> PlayerCharacter;
 
 
 
     //!getting information about player
     Player player = Player();
     player.name = PlayerName;
-    player.character = PlayerCharacter;
+    player.character = '@';
     
     
     

@@ -96,7 +96,7 @@ public:
 };
 
 void spawnpoints(WINDOW* window){
-        
+        srand(time(NULL));
         int xlocations[9]={2,6,10,14,18,30,34,42,46};
         int ylocations[10]={1,3,5,7,9,15,17,19,21,23};
         int xrandindex=0;
@@ -287,18 +287,15 @@ int main (){
     //!get name of player and select character
     system("clear");
     string PlayerName;
-    char PlayerCharacter;
     cout<<"Enter player name: ";
     cin >> PlayerName;
-    cout<<"Enter player character: ";
-    cin >> PlayerCharacter;
 
 
 
     //!getting information about player
     Player player = Player();
     player.name = PlayerName;
-    player.character = PlayerCharacter;
+    player.character = '@';
     
     
     
